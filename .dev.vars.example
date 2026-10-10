@@ -1,0 +1,5 @@
+# Copy to .dev.vars for local development (`wrangler dev`). Never commit .dev.vars.
+# Cloudflare's official Turnstile TEST secret (always passes). Use your real secret only via `wrangler secret put`.
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+# Any long random string; used to hash IP addresses for contact-form rate limiting.
+IP_HASH_SALT=dev-only-change-me
