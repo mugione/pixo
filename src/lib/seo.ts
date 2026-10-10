@@ -15,11 +15,11 @@ export type HeadData = {
 
 const OG_LOCALE: Record<Lang, string> = { tr: 'tr_TR', en: 'en_US' }
 
-export function buildHead(lang: Lang, page: PageId | 'notFound'): HeadData {
+export function buildHead(lang: Lang, page: PageId | 'notFound' | 'app'): HeadData {
   const t = dictionaries[lang]
   const seo = t.seo[page]
-  const isPage = page !== 'notFound'
-  const canonical = isPage ? SITE_URL + pagePath(lang, page) : SITE_URL + '/'
+  const isPage = page !== 'notFound' && page !== 'app'
+  const canonical = isPage ? SITE_URL + pagePath(lang, page) : SITE_URL + (page === 'app' ? '/app' : '/')
   const alternates = isPage
     ? [
         ...LANGS.map((l) => ({ hreflang: l, href: SITE_URL + pagePath(l, page) })),

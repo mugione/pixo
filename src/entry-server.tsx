@@ -10,7 +10,7 @@ export { LANGS, PAGES, NOINDEX_PAGES, pagePath } from './i18n/routes'
 /** Renders one URL to `{ html, head, lang }` for static prerendering (scripts/prerender.mjs). */
 export function render(url: string) {
   const { lang, path } = splitLang(url)
-  const page = pageIdForPath(path) ?? 'notFound'
+  const page = url === '/app' || url.startsWith('/app/') ? 'app' : (pageIdForPath(path) ?? 'notFound')
   const html = renderToString(
     <StrictMode>
       <StaticRouter location={url}>

@@ -1,13 +1,12 @@
 // Worker API tests against a REAL local D1 database (Miniflare via wrangler's getPlatformProxy).
 // Only the outbound Turnstile siteverify call is stubbed.
-import { readFileSync } from 'node:fs'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { getPlatformProxy } from 'wrangler'
-import { handleContact } from '../worker/contact'
-import type { AppEnv } from '../worker/env'
-import worker from '../worker/index'
+import { handleContact } from '../../worker/contact'
+import type { AppEnv } from '../../worker/env'
+import worker from '../../worker/index'
+import { setupDb } from './helpers'
 
-let proxy: Awaited<ReturnType<typeof getPlatformProxy>>
+let proxy: Awaited<ReturnType<typeof setupDb>>['proxy']
 let env: AppEnv
 
 const turnstileOk = (async () => Response.json({ success: true, action: 'contact' })) as unknown as typeof fetch
@@ -32,13 +31,9 @@ const req = (b: unknown, headers: Record<string, string> = {}) =>
   })
 
 beforeAll(async () => {
-  proxy = await getPlatformProxy({ configPath: 'wrangler.jsonc', persist: false })
-  const db = (proxy.env as { DB: D1Database }).DB
-  const sql = readFileSync('migrations/0001_contact_messages.sql', 'utf8')
-    .split('\n')
-    .filter((l) => !l.trim().startsWith('--'))
-    .join('\n')
-  for (const stmt of sql.split(';').map((s) => s.trim()).filter(Boolean)) await db.prepare(stmt).run()
+  const setup = await setupDb()
+  proxy = setup.proxy
+  const db = setup.db
   env = {
     DB: db,
     ASSETS: { fetch: async () => new Response('asset') } as unknown as Fetcher,

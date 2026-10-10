@@ -19,5 +19,5 @@
     "resolveJsonModule": true
   },
   "include": ["src", "tests", "shared"],
-  "exclude": ["tests/worker.test.ts"]
+  "exclude": ["tests/worker"]
 }

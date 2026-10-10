@@ -14,6 +14,8 @@ import NotFound from './pages/NotFound'
 import Pricing from './pages/Pricing'
 import Roadmap from './pages/Roadmap'
 import Signup from './pages/Signup'
+import Login from './pages/Login'
+import AppRoot from './app/AppRoot'
 import Solutions from './pages/Solutions'
 
 export const PAGE_COMPONENTS: Record<PageId, ComponentType> = {
@@ -32,6 +34,7 @@ export const PAGE_COMPONENTS: Record<PageId, ComponentType> = {
   cookies: Cookies,
   kvkk: Kvkk,
   signup: Signup,
+  login: Login,
 }
 
 const pageRoutes = (Object.keys(PAGES) as PageId[]).map((id) => {
@@ -42,6 +45,7 @@ const pageRoutes = (Object.keys(PAGES) as PageId[]).map((id) => {
 export function App() {
   return (
     <Routes>
+      <Route path="/app/*" element={<AppRoot />} />
       <Route path="/en" element={<Layout />}>
         {pageRoutes}
         <Route path="*" element={<NotFound />} />

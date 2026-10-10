@@ -35,6 +35,8 @@ for (const lang of LANGS) {
 // Workers Static Assets serves the nearest 404.html, so /en/* gets an English 404 page.
 await write(join(dist, '404.html'), page('/__not-found__'))
 await write(join(dist, 'en', '404.html'), page('/en/__not-found__'))
+// Signed-in app shell: served by the Worker for every /app/* URL after a session check.
+await write(join(dist, 'app', 'index.html'), page('/app'))
 
 // sitemap.xml with hreflang alternates (noindex pages excluded)
 const today = new Date().toISOString().slice(0, 10)
@@ -54,7 +56,7 @@ await write(
 
 await write(
   join(dist, 'robots.txt'),
-  `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /app\nDisallow: /admin\nDisallow: /signup\nDisallow: /en/signup\n\nSitemap: ${SITE_URL}/sitemap.xml\n`,
+  `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /app\nDisallow: /admin\nDisallow: /signup\nDisallow: /en/signup\nDisallow: /login\nDisallow: /en/login\n\nSitemap: ${SITE_URL}/sitemap.xml\n`,
 )
 
 // Security headers. The CSP allows exactly one inline script (theme bootstrap) via its hash.
@@ -91,4 +93,4 @@ await write(
 )
 
 await rm(join(root, 'dist-ssr'), { recursive: true, force: true })
-console.log(`prerendered ${written.length} pages + 2× 404.html, sitemap.xml, robots.txt, _headers`)
+console.log(`prerendered ${written.length} pages + 2× 404.html + app shell, sitemap.xml, robots.txt, _headers`)

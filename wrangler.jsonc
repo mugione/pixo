@@ -1,34 +1,43 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "pixo-ai",
+  "name": "pixo",
   "main": "worker/index.ts",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
+  // Production domain (Workers Custom Domain). workers.dev stays on as a fallback/test URL.
+  "routes": [{ "pattern": "pixo.tr", "custom_domain": true }],
+  "workers_dev": true,
   // Static site (prerendered public pages) is served by Workers Static Assets.
-  // Only /api/* reaches the Worker; everything else is served directly (free, no Worker invocation).
+  // Only /api/* and /app/* reach the Worker; everything else is served directly (no Worker invocation).
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
     "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/api/*", "/app", "/app/*"],
+    // NOTE: /app is served by the Worker after a session check (see worker/index.ts).
   },
+  // Workers AI (free daily allocation; no API key needed inside the Worker).
+  "ai": { "binding": "AI" },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "pixo-db",
-      // Replace with the real id after `wrangler d1 create pixo-db` (see docs/DEPLOY.md).
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      // Production database (region: EEUR). Not a secret.
+      "database_id": "43f495e9-bb46-457d-9f45-633cba0c1211",
       "migrations_dir": "migrations"
     }
   ],
+  // Production values. Local development overrides them from .dev.vars (see .dev.vars.example).
   "vars": {
-    "APP_ENV": "development",
+    "APP_ENV": "production",
     "SITE_URL": "https://pixo.tr",
-    // Public Turnstile site key. The default is Cloudflare's official "always passes" TEST key.
-    // Replace it in production with your own site key (it is public, not a secret).
-    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA"
+    // Origins allowed for WebAuthn + state-changing requests (besides the request's own host).
+    "ALLOWED_ORIGINS": "https://pixo.tr,https://pixo.murat-gulsen.workers.dev",
+    // Public Turnstile site key (not a secret). The matching secret is TURNSTILE_SECRET_KEY.
+    // When the secret is set, sign-up, recovery-code login and the contact form require Turnstile.
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFTIRdEXn42EIukn"
   }
   // Secrets (never commit): TURNSTILE_SECRET_KEY, IP_HASH_SALT
   // Set with: wrangler secret put TURNSTILE_SECRET_KEY

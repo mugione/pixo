@@ -1,10 +1,12 @@
 // Turkish dictionary — the source of truth for the `Dict` shape.
 // English (en.ts) must satisfy the same type, so a missing translation is a compile error.
+import { appTr } from './app-tr'
 
 type Section = { h: string; p?: string[]; ul?: string[] }
 
 export const tr = {
   langName: 'Türkçe',
+  app: appTr,
   common: {
     skipToContent: 'İçeriğe geç',
     brandTagline: 'Daha akıllı üret. Daha hızlı pazarlama yap.',
@@ -98,7 +100,9 @@ export const tr = {
     terms: { title: 'Kullanım Koşulları | Pixo AI', description: 'Pixo AI kullanım koşulları taslağı.' },
     cookies: { title: 'Çerez Politikası | Pixo AI', description: 'Pixo AI çerez politikası taslağı.' },
     kvkk: { title: 'KVKK Aydınlatma Metni | Pixo AI', description: 'Pixo AI 6698 sayılı KVKK kapsamında aydınlatma metni taslağı.' },
-    signup: { title: 'Hesap Oluştur | Pixo AI', description: 'Pixo AI hesap oluşturma.' },
+    signup: { title: 'Hesap Oluştur | Pixo AI', description: 'Geçiş anahtarıyla ücretsiz Pixo AI hesabı oluşturun.' },
+    login: { title: 'Giriş Yap | Pixo AI', description: 'Geçiş anahtarınızla Pixo AI hesabınıza giriş yapın.' },
+    app: { title: 'Pixo AI Çalışma Alanı', description: 'Pixo AI çalışma alanı.' },
     notFound: { title: 'Sayfa bulunamadı | Pixo AI', description: 'Aradığınız sayfa bulunamadı.' },
   },
   home: {
@@ -290,7 +294,7 @@ export const tr = {
         'AI metin üretimi',
         'Günlük sınırlı görsel üretimi',
         'Kampanya taslakları',
-        'Temel tasarım editörü',
+        'Temel tasarım editörü (yakında)',
         'PNG/JPG dışa aktarma',
         'Türkçe/İngilizce arayüz',
       ],
@@ -338,7 +342,7 @@ export const tr = {
         items: [
           { label: 'Kurumsal web sitesi', status: 'done' },
           { label: 'Responsive arayüz', status: 'done' },
-          { label: 'Kullanıcı hesabı', status: 'planned' },
+          { label: 'Kullanıcı hesabı', status: 'inProgress' },
           { label: 'Cloudflare D1', status: 'inProgress' },
           { label: 'Yönetici paneli', status: 'planned' },
           { label: 'Temel güvenlik sistemi', status: 'inProgress' },
@@ -347,19 +351,19 @@ export const tr = {
       {
         name: 'Aşama 2 — AI MVP',
         items: [
-          { label: 'AI metin üretimi', status: 'planned' },
-          { label: 'Ürün bilgisi formları', status: 'planned' },
-          { label: 'Marka kimliği', status: 'planned' },
-          { label: 'Proje kaydetme', status: 'planned' },
-          { label: 'Kullanım kotası', status: 'planned' },
-          { label: 'AI görsel üretimi', status: 'planned' },
+          { label: 'AI metin üretimi', status: 'inProgress' },
+          { label: 'Ürün bilgisi formları', status: 'inProgress' },
+          { label: 'Marka kimliği', status: 'inProgress' },
+          { label: 'Proje kaydetme', status: 'inProgress' },
+          { label: 'Kullanım kotası', status: 'inProgress' },
+          { label: 'AI görsel üretimi', status: 'inProgress' },
         ],
       },
       {
         name: 'Aşama 3 — Creative Workspace',
         items: [
           { label: 'Tasarım editörü', status: 'planned' },
-          { label: 'Kampanya oluşturucu', status: 'planned' },
+          { label: 'Kampanya oluşturucu', status: 'inProgress' },
           { label: 'Şablon galerisi', status: 'planned' },
           { label: 'Çok dilli içerik', status: 'planned' },
           { label: 'Gelişmiş proje yönetimi', status: 'planned' },
@@ -481,18 +485,6 @@ export const tr = {
     tagsLabel: 'Etiket önerileri',
     nextTitle: 'Kendi ürününüzle denemek ister misiniz?',
     nextBody: 'Hesaplar açıldığında aynı akışı kendi markanız ve ürününüzle gerçek AI üretimiyle kullanabileceksiniz.',
-  },
-  signup: {
-    title: "Pixo AI'ya Hoş Geldiniz.",
-    lead: 'İlk pazarlama çalışmanızı oluşturmak için hesabınızı hazırlayın.',
-    notice: 'Kullanıcı hesapları henüz açılmadı.',
-    noticeBody:
-      'Pixo AI şu anda erken geliştirme aşamasında. Geçiş anahtarı (passkey) ile güvenli hesap oluşturma bir sonraki geliştirme aşamasında kullanıma açılacak. Bu sırada demoyu inceleyebilir veya bize yazabilirsiniz.',
-    passkeyTitle: 'Neden geçiş anahtarı?',
-    passkeyBody:
-      'Pixo AI, parola yerine cihazınızın biyometrik doğrulamasını veya ekran kilidini kullanan geçiş anahtarlarıyla giriş yapmanızı sağlayacak. Parola sızıntısı riski olmadan, tek dokunuşla güvenli giriş.',
-    demoCta: 'Demoyu İncele',
-    contactCta: 'Haber Almak İstiyorum',
   },
   notFound: {
     title: 'Sayfa bulunamadı.',

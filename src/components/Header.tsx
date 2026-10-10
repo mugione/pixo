@@ -53,7 +53,7 @@ export function Header() {
         <div className="hidden items-center gap-2 lg:flex">
           <LangSwitch />
           <ThemeToggle />
-          <Link to={to('signup')} className="btn-ghost">
+          <Link to={to('login')} className="btn-ghost">
             {t.common.nav.login}
           </Link>
           <Link to={to('signup')} className="btn-primary">
@@ -91,7 +91,7 @@ export function Header() {
             <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
               <LangSwitch />
               <div className="flex gap-2">
-                <Link to={to('signup')} className="btn-secondary">
+                <Link to={to('login')} className="btn-secondary">
                   {t.common.nav.login}
                 </Link>
                 <Link to={to('signup')} className="btn-primary">

@@ -1,7 +1,9 @@
+import { appEn } from './app-en'
 import type { Dict } from './tr'
 
 export const en: Dict = {
   langName: 'English',
+  app: appEn,
   common: {
     skipToContent: 'Skip to content',
     brandTagline: 'Create smarter. Market faster.',
@@ -94,7 +96,9 @@ export const en: Dict = {
     terms: { title: 'Terms of Use | Pixo AI', description: 'Draft terms of use of Pixo AI.' },
     cookies: { title: 'Cookie Policy | Pixo AI', description: 'Draft cookie policy of Pixo AI.' },
     kvkk: { title: 'KVKK Privacy Notice | Pixo AI', description: 'Draft privacy notice of Pixo AI under the Turkish Personal Data Protection Law (KVKK).' },
-    signup: { title: 'Create Account | Pixo AI', description: 'Create a Pixo AI account.' },
+    signup: { title: 'Create Account | Pixo AI', description: 'Create a free Pixo AI account with a passkey.' },
+    login: { title: 'Sign In | Pixo AI', description: 'Sign in to your Pixo AI account with your passkey.' },
+    app: { title: 'Pixo AI Workspace', description: 'Pixo AI workspace.' },
     notFound: { title: 'Page not found | Pixo AI', description: 'The page you are looking for could not be found.' },
   },
   home: {
@@ -286,7 +290,7 @@ export const en: Dict = {
         'AI copy generation',
         'Limited daily image generation',
         'Campaign drafts',
-        'Basic design editor',
+        'Basic design editor (coming soon)',
         'PNG/JPG export',
         'Turkish/English interface',
       ],
@@ -334,7 +338,7 @@ export const en: Dict = {
         items: [
           { label: 'Company website', status: 'done' },
           { label: 'Responsive interface', status: 'done' },
-          { label: 'User accounts', status: 'planned' },
+          { label: 'User accounts', status: 'inProgress' },
           { label: 'Cloudflare D1', status: 'inProgress' },
           { label: 'Admin panel', status: 'planned' },
           { label: 'Core security system', status: 'inProgress' },
@@ -343,19 +347,19 @@ export const en: Dict = {
       {
         name: 'Phase 2 — AI MVP',
         items: [
-          { label: 'AI copy generation', status: 'planned' },
-          { label: 'Product information forms', status: 'planned' },
-          { label: 'Brand identity', status: 'planned' },
-          { label: 'Saving projects', status: 'planned' },
-          { label: 'Usage quotas', status: 'planned' },
-          { label: 'AI image generation', status: 'planned' },
+          { label: 'AI copy generation', status: 'inProgress' },
+          { label: 'Product information forms', status: 'inProgress' },
+          { label: 'Brand identity', status: 'inProgress' },
+          { label: 'Saving projects', status: 'inProgress' },
+          { label: 'Usage quotas', status: 'inProgress' },
+          { label: 'AI image generation', status: 'inProgress' },
         ],
       },
       {
         name: 'Phase 3 — Creative Workspace',
         items: [
           { label: 'Design editor', status: 'planned' },
-          { label: 'Campaign builder', status: 'planned' },
+          { label: 'Campaign builder', status: 'inProgress' },
           { label: 'Template gallery', status: 'planned' },
           { label: 'Multilingual content', status: 'planned' },
           { label: 'Advanced project management', status: 'planned' },
@@ -477,18 +481,6 @@ export const en: Dict = {
     tagsLabel: 'Hashtag suggestions',
     nextTitle: 'Want to try it with your own product?',
     nextBody: 'Once accounts open, you will be able to use the same flow with your own brand and product, powered by real AI generation.',
-  },
-  signup: {
-    title: 'Welcome to Pixo AI.',
-    lead: 'Set up your account to create your first marketing project.',
-    notice: 'User accounts are not open yet.',
-    noticeBody:
-      'Pixo AI is in early development. Secure account creation with passkeys will open in the next development phase. In the meantime, you can explore the demo or write to us.',
-    passkeyTitle: 'Why passkeys?',
-    passkeyBody:
-      "Pixo AI will let you sign in with passkeys that use your device's biometrics or screen lock instead of a password. Secure, one-tap sign-in without the risk of password leaks.",
-    demoCta: 'Explore the Demo',
-    contactCta: 'Keep Me Posted',
   },
   notFound: {
     title: 'Page not found.',

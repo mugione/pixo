@@ -11,3 +11,4 @@ test-results/
 screenshots/
 .DS_Store
 worker-configuration.d.ts
+wrangler.local.json
