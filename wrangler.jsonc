@@ -8,14 +8,17 @@
   // Served on pixo.<account>.workers.dev until the pixo.tr custom domain is attached.
   "workers_dev": true,
   // Static site (prerendered public pages) is served by Workers Static Assets.
-  // Only /api/* reaches the Worker; everything else is served directly (free, no Worker invocation).
+  // Only /api/* and /app/* reach the Worker; everything else is served directly (no Worker invocation).
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
     "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/api/*", "/app", "/app/*"],
+    // NOTE: /app is served by the Worker after a session check (see worker/index.ts).
   },
+  // Workers AI (free daily allocation; no API key needed inside the Worker).
+  "ai": { "binding": "AI" },
   "d1_databases": [
     {
       "binding": "DB",
@@ -29,6 +32,8 @@
   "vars": {
     "APP_ENV": "production",
     "SITE_URL": "https://pixo.tr",
+    // Origins allowed for WebAuthn + state-changing requests (besides the request's own host).
+    "ALLOWED_ORIGINS": "https://pixo.tr,https://pixo.murat-gulsen.workers.dev",
     // Public Turnstile site key (not a secret). Empty = contact form reports "unavailable"
     // instead of running without bot protection. Set it when the real widget exists.
     "TURNSTILE_SITE_KEY": ""

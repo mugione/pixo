@@ -11,6 +11,15 @@ export type ApiErrorCode =
   | 'unsupported_media_type'
   | 'internal_error'
   | 'network_error'
+  | 'forbidden'
+  | 'unauthorized'
+  | 'conflict'
+  | 'registrations_closed'
+  | 'auth_failed'
+  | 'quota_exceeded'
+  | 'system_quota_exceeded'
+  | 'ai_disabled'
+  | 'ai_failed'
 
 export class ApiError extends Error {
   constructor(
@@ -45,3 +54,11 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   }
   return body.data as T
 }
+
+export const newIdempotencyKey = () => crypto.randomUUID()
+
+export const post = <T,>(path: string, data: unknown, headers?: Record<string, string>) =>
+  api<T>(path, { method: 'POST', body: JSON.stringify(data), headers })
+export const put = <T,>(path: string, data: unknown) => api<T>(path, { method: 'PUT', body: JSON.stringify(data) })
+export const del = <T,>(path: string, data?: unknown) =>
+  api<T>(path, { method: 'DELETE', ...(data === undefined ? {} : { body: JSON.stringify(data) }) })

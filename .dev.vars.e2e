@@ -1,0 +1,6 @@
+# Used by the app e2e test (scripts/e2e-app.mjs) in sandboxes where workerd has no outbound
+# network: Turnstile is OFF (no site key, no secret). Never use for production.
+APP_ENV=development
+TURNSTILE_SITE_KEY=
+IP_HASH_SALT=e2e-only-salt
+ALLOWED_ORIGINS=http://localhost:8787,http://127.0.0.1:8787,http://localhost:5173

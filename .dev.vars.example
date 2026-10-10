@@ -6,3 +6,5 @@ TURNSTILE_SITE_KEY=1x00000000000000000000AA
 TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 # Any long random string; used to hash IP addresses for contact-form rate limiting.
 IP_HASH_SALT=dev-only-change-me
+# Local origins (wrangler dev on :8787, Vite on :5173).
+ALLOWED_ORIGINS=http://localhost:8787,http://127.0.0.1:8787,http://localhost:5173

@@ -19,7 +19,8 @@ async function walk(dir) {
 
 const files = await walk(dist)
 const htmlFiles = files.filter((f) => f.endsWith('.html'))
-const noindexExpected = new Set(['signup/index.html', 'en/signup/index.html', '404.html', 'en/404.html'])
+const noindexExpected = new Set(['signup/index.html', 'en/signup/index.html', 'login/index.html', 'en/login/index.html', '404.html', 'en/404.html', 'app/index.html'])
+const APP_SHELL = 'app/index.html'
 
 for (const f of htmlFiles) {
   const rel = relative(dist, f)
@@ -40,13 +41,13 @@ for (const f of htmlFiles) {
   const robots = one(/<meta name="robots" content="([^"]+)"/, 'robots meta')
   const shouldNoindex = noindexExpected.has(rel)
   if (robots && robots.startsWith('noindex') !== shouldNoindex) fail(rel, `robots=${robots}`)
-  if (!rel.endsWith('404.html')) {
+  if (!rel.endsWith('404.html') && rel !== APP_SHELL) {
     const canonical = one(/<link rel="canonical" href="([^"]+)"/, 'canonical')
     if (canonical && canonical !== SITE + urlPath) fail(rel, `canonical ${canonical} != ${SITE + urlPath}`)
     for (const hl of ['tr', 'en', 'x-default']) if (!html.includes(`hreflang="${hl}"`)) fail(rel, `missing hreflang ${hl}`)
   }
   const h1 = (html.match(/<h1[\s>]/g) || []).length
-  if (h1 !== 1) fail(rel, `expected exactly one <h1>, found ${h1}`)
+  if (rel !== APP_SHELL && h1 !== 1) fail(rel, `expected exactly one <h1>, found ${h1}`)
   if (/\bundefined\b|\[object Object\]|\{tbd\}|\{kvkk\}/.test(html.replace(/<script[\s\S]*?<\/script>/g, ''))) fail(rel, 'unrendered placeholder or undefined in markup')
   for (const img of html.match(/<img\b[^>]*>/g) || []) if (!/\balt=/.test(img)) fail(rel, `img without alt: ${img}`)
   if (!html.includes('<div id="root"><')) fail(rel, 'page was not prerendered')
@@ -61,7 +62,7 @@ for (const f of htmlFiles) {
   const url = SITE + (rel === 'index.html' ? '/' : '/' + rel.replace(/\/?index\.html$/, ''))
   if (!locs.includes(url)) fail('sitemap.xml', `missing ${url}`)
 }
-if (locs.some((l) => l.includes('/signup'))) fail('sitemap.xml', 'contains noindex page')
+if (locs.some((l) => /\/(signup|login|app)\b/.test(l))) fail('sitemap.xml', 'contains noindex page')
 
 // Secrets must never reach the client bundle.
 const SECRET_PATTERNS = [/1x0000000000000000000000000000000AA/, /TURNSTILE_SECRET_KEY/, /IP_HASH_SALT/, /sk-ant-[\w-]+/, /CLOUDFLARE_API_TOKEN/]

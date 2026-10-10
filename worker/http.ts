@@ -1,4 +1,5 @@
 // Shared HTTP helpers: one JSON envelope for every API response.
+import type { AppEnv } from './env'
 
 const SECURITY_HEADERS: Record<string, string> = {
   'Content-Type': 'application/json; charset=utf-8',
@@ -9,8 +10,10 @@ const SECURITY_HEADERS: Record<string, string> = {
   'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
 }
 
-export function json(data: unknown, status = 200, extra: Record<string, string> = {}): Response {
-  return new Response(JSON.stringify({ data }), { status, headers: { ...SECURITY_HEADERS, ...extra } })
+export function json(data: unknown, status = 200, extra: Record<string, string> | Headers = {}): Response {
+  const headers = new Headers(SECURITY_HEADERS)
+  new Headers(extra).forEach((v, k) => headers.append(k, v))
+  return new Response(JSON.stringify({ data }), { status, headers })
 }
 
 export type ErrorCode =
@@ -23,13 +26,38 @@ export type ErrorCode =
   | 'payload_too_large'
   | 'unsupported_media_type'
   | 'forbidden'
+  | 'unauthorized'
+  | 'conflict'
+  | 'registrations_closed'
+  | 'auth_failed'
+  | 'quota_exceeded'
+  | 'system_quota_exceeded'
+  | 'ai_disabled'
+  | 'ai_failed'
   | 'internal_error'
 
-export function error(code: ErrorCode, message: string, status: number, extra: { fields?: string[]; headers?: Record<string, string> } = {}): Response {
+export function error(
+  code: ErrorCode,
+  message: string,
+  status: number,
+  extra: { fields?: string[]; headers?: Record<string, string> | Headers } = {},
+): Response {
+  const headers = new Headers(SECURITY_HEADERS)
+  if (extra.headers) new Headers(extra.headers).forEach((v, k) => headers.append(k, v))
   return new Response(JSON.stringify({ error: { code, message, ...(extra.fields ? { fields: extra.fields } : {}) } }), {
     status,
-    headers: { ...SECURITY_HEADERS, ...extra.headers },
+    headers,
   })
+}
+
+/** Thrown inside handlers to short-circuit with an error response. */
+export class HttpError extends Error {
+  constructor(public res: Response) {
+    super('http_error')
+  }
+}
+export const fail = (...args: Parameters<typeof error>): never => {
+  throw new HttpError(error(...args))
 }
 
 /** Reads a JSON body with a hard size cap (defends against oversized payloads). */
@@ -51,18 +79,45 @@ export async function readJson(req: Request, maxBytes: number): Promise<{ ok: tr
   }
 }
 
+/** Same as readJson but throws HttpError; returns a plain object (never null/array). */
+export async function body(req: Request, maxBytes = 16 * 1024): Promise<Record<string, unknown>> {
+  const r = await readJson(req, maxBytes)
+  if (!r.ok) throw new HttpError(r.res)
+  const b = r.body
+  return b && typeof b === 'object' && !Array.isArray(b) ? (b as Record<string, unknown>) : {}
+}
+
+export function allowedOrigins(env: Pick<AppEnv, 'ALLOWED_ORIGINS'>): string[] {
+  return (env.ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((s) => s.trim().replace(/\/$/, ''))
+    .filter(Boolean)
+}
+
 /**
  * CSRF defence for state-changing requests: browsers always send Origin on cross-site POSTs,
- * so reject any Origin that is not this site. (JSON content-type also forces a CORS preflight.)
+ * so reject any Origin that is neither this host nor explicitly allowed.
+ * (JSON content-type also forces a CORS preflight, and no CORS headers are ever returned.)
  */
-export function sameOrigin(req: Request): boolean {
+export function sameOrigin(req: Request, env: Pick<AppEnv, 'ALLOWED_ORIGINS'> = {}): boolean {
   const origin = req.headers.get('Origin')
-  if (!origin) return true // non-browser clients; still protected by Turnstile where it matters
+  if (!origin) return true // non-browser clients; session cookies are SameSite=Lax anyway
   try {
-    return new URL(origin).host === new URL(req.url).host
+    if (new URL(origin).host === new URL(req.url).host) return true
   } catch {
     return false
   }
+  return allowedOrigins(env).includes(origin.replace(/\/$/, ''))
+}
+
+export function getCookie(req: Request, name: string): string | null {
+  const header = req.headers.get('Cookie')
+  if (!header) return null
+  for (const part of header.split(';')) {
+    const [k, ...v] = part.trim().split('=')
+    if (k === name) return decodeURIComponent(v.join('='))
+  }
+  return null
 }
 
 export async function sha256Hex(input: string): Promise<string> {

@@ -7,7 +7,7 @@ const MAX_BODY_BYTES = 16 * 1024
 const MAX_PER_IP_PER_HOUR = 5
 
 export async function handleContact(req: Request, env: AppEnv, fetchImpl: typeof fetch = fetch): Promise<Response> {
-  if (!sameOrigin(req)) return error('forbidden', 'Cross-origin request rejected', 403)
+  if (!sameOrigin(req, env)) return error('forbidden', 'Cross-origin request rejected', 403)
   if (!env.DB || !env.TURNSTILE_SECRET_KEY || !env.IP_HASH_SALT) {
     return error('unavailable', 'Contact form is not configured', 503)
   }

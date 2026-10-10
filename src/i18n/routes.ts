@@ -19,12 +19,13 @@ export const PAGES = {
   cookies: '/cookies',
   kvkk: '/kvkk',
   signup: '/signup',
+  login: '/login',
 } as const
 
 export type PageId = keyof typeof PAGES
 
 /** Pages excluded from search indexes and the sitemap. */
-export const NOINDEX_PAGES: ReadonlySet<PageId> = new Set<PageId>(['signup'])
+export const NOINDEX_PAGES: ReadonlySet<PageId> = new Set<PageId>(['signup', 'login'])
 
 export function localePath(lang: Lang, path: string): string {
   if (lang === DEFAULT_LANG) return path
