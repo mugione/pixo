@@ -4,7 +4,7 @@
 
 Pixo AI, işletmelerin ürün bilgilerini yapay zekâ yardımıyla pazarlama metinlerine, kampanya fikirlerine ve tanıtım görsellerine dönüştürmesini sağlayan bir SaaS platformudur. Alan adı: <https://pixo.tr>
 
-> **Durum:** Phase 1 (Website Foundation) tamamlandı. Kullanıcı hesapları, AI üretimi ve yönetici paneli henüz **yok**; bunlar Phase 2+ kapsamındadır. Ayrıntılar: [docs/PHASE-1-REPORT.md](docs/PHASE-1-REPORT.md)
+> **Durum:** Web sitesi, passkey hesapları, çalışma alanı ve Workers AI ile metin/kampanya/görsel üretimi yazıldı ve `https://pixo.murat-gulsen.workers.dev` adresine dağıtıldı. Canlı AI çağrısı henüz gerçek kullanıcıyla doğrulanmadı; tasarım editörü, yönetici paneli ve Claude entegrasyonu henüz yok. Ayrıntılar: [docs/PHASE-2-3-REPORT.md](docs/PHASE-2-3-REPORT.md) · [docs/PHASE-1-REPORT.md](docs/PHASE-1-REPORT.md)
 
 ## Teknoloji
 
@@ -16,6 +16,8 @@ Pixo AI, işletmelerin ürün bilgilerini yapay zekâ yardımıyla pazarlama met
 | API | Cloudflare Worker (`/api/*`) | Tek dağıtım birimi |
 | Veri tabanı | Cloudflare D1 | Ücretsiz plan, SQL, migration desteği |
 | Bot koruması | Cloudflare Turnstile (sunucu tarafı doğrulama) | Ücretsiz, gizlilik dostu |
+| Kimlik doğrulama | Passkey (WebAuthn, `@simplewebauthn`) + kurtarma kodları | Parola ve e-posta altyapısı gerektirmez |
+| AI | Cloudflare Workers AI bağlantısı (GLM-4.7-flash, FLUX.2 klein 4B) | Worker içinde API anahtarı gerekmez; ücretsiz günlük pay |
 | Fontlar | Inter, Plus Jakarta Sans (yalnızca logo), JetBrains Mono — kendi sunucumuzdan | Üçüncü taraf isteği yok (KVKK) |
 
 Ayrıntılı mimari kararlar: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
@@ -29,6 +31,8 @@ npm run db:migrate:local                # yerel D1 veritabanını oluşturur
 npm run build                           # dist/ üretir (ön-render dahil)
 npx wrangler dev                        # http://localhost:8787 — site + API + yerel D1
 ```
+
+Workers AI bağlantısı yerelde de Cloudflare hesabı ister. Hesapsız tam yerel çalışma için `npm run dev:local` kullanın (AI uç noktaları 503 döner, geri kalan her şey çalışır).
 
 Arayüz geliştirirken anında yenileme için iki terminal kullanın:
 
@@ -45,7 +49,8 @@ npm run dev             # Vite :5173, /api isteklerini :8787'ye yönlendirir
 | `npm test` | Birim + entegrasyon testleri (gerçek yerel D1 ile) |
 | `npm run build` | İstemci + SSR build, ön-render, sitemap, robots, `_headers` |
 | `npm run test:seo` | Build çıktısı kontrolleri (SEO etiketleri, noindex, sırların sızmaması) |
-| `npm run test:e2e` | Playwright: tüm sayfalar × mobil/tablet/masaüstü × açık/koyu tema (çalışan `wrangler dev` gerekir) |
+| `npm run test:e2e` | Playwright: tüm public sayfalar × mobil/tablet/masaüstü × açık/koyu tema (çalışan `wrangler dev` gerekir) |
+| `npm run test:e2e:app` | Playwright + sanal passkey cihazı: hesap, çalışma alanı, izolasyon, silme (`npm run dev:local -- --env-file .dev.vars.e2e` ile) |
 | `npm run check` | typecheck + test + build + test:seo |
 | `npm run deploy` | `check` başarılıysa `wrangler deploy` — **canlı ortama dokunur, bkz. docs/DEPLOY.md** |
 
@@ -60,7 +65,8 @@ src/                React uygulaması
   styles/index.css  Tasarım sistemi (token'lar, açık/koyu tema)
   entry-server.tsx  Ön-render girişi
 shared/             Frontend + Worker ortak kod (form doğrulama)
-worker/             Cloudflare Worker API
+src/app/            Oturum açılmış uygulama (/app/*)
+worker/             Cloudflare Worker API (routes/, ai/, session, ratelimit)
 migrations/         D1 SQL migration dosyaları (numaralı, değiştirilemez)
 scripts/            prerender, build kontrolleri, e2e, marka görselleri üretimi
 public/             favicon, logo (açık/koyu), OG görseli, manifest
@@ -76,4 +82,6 @@ Türkçe kökte (`/pricing`), İngilizce `/en` altında (`/en/pricing`). Her say
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — mimari ve önemli kararlar
 - [docs/DEPLOY.md](docs/DEPLOY.md) — Cloudflare kurulum ve dağıtım kontrol listesi
 - [docs/SECURITY.md](docs/SECURITY.md) — güvenlik yapılandırması
-- [docs/PHASE-1-REPORT.md](docs/PHASE-1-REPORT.md) — test sonuçları, bilinen eksikler, Phase 2 hazırlığı
+- [docs/OPERATIONS.md](docs/OPERATIONS.md) — kotalar, AI kapatma, kullanıcı yönetimi, izleme (SQL)
+- [docs/PHASE-2-3-REPORT.md](docs/PHASE-2-3-REPORT.md) — hesaplar + AI: test sonuçları, doğrulanamayanlar, eksikler
+- [docs/PHASE-1-REPORT.md](docs/PHASE-1-REPORT.md) — web sitesi aşaması

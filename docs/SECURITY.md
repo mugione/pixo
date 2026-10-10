@@ -1,4 +1,4 @@
-# Güvenlik Yapılandırması (Phase 1)
+# Güvenlik Yapılandırması
 
 | Kontrol | Uygulama | Konum |
 |---|---|---|
@@ -18,9 +18,24 @@
 | Kişisel veri minimizasyonu | Ham IP saklanmaz (tuzlu SHA-256); hata loglarına istek gövdesi yazılmaz; üçüncü taraf font/analitik yok | `worker/` |
 | Hata yanıtları | Tek tip JSON zarfı; iç hata ayrıntıları istemciye gönderilmez; API yanıtları `Cache-Control: no-store` | `worker/http.ts` |
 
-## Phase 2+ için planlanan
+## Hesaplar ve AI (Phase 2–3, uygulandı)
 
-- Passkey (WebAuthn) kimlik doğrulama; oturum çerezi `__Host-` önekli, `HttpOnly; Secure; SameSite=Lax`, D1'de yalnızca token hash'i.
-- Rol kontrolü sunucu tarafında; yönetici rolü yalnızca migration/CLI ile atanır.
-- Kullanıcı başına ve global AI kotası, idempotency anahtarları, yönetici işlem kayıtları (`audit_logs`).
-- AI'ya giden kullanıcı metni güvenilmeyen veri olarak ayrı mesaj bloğunda iletilir; yanıt şema doğrulamasından geçmeden arayüze gönderilmez.
+| Kontrol | Uygulama |
+|---|---|
+| Kimlik doğrulama | Passkey (WebAuthn); challenge D1'de 5 dk, tek kullanımlık; RP ID ve origin yalnızca `ALLOWED_ORIGINS` veya isteğin kendi host'u |
+| Oturum | `__Host-pixo_session` çerezi (`HttpOnly; Secure; SameSite=Lax; Path=/`), 30 gün, D1'de yalnızca SHA-256 hash; çıkışta iptal; askıya alınan kullanıcıda geçersiz |
+| Kurtarma kodları | 10 adet, 60 bit entropi, tuzlu SHA-256, tek kullanımlık, IP başına 10/saat |
+| Rol | Kayıtta sabit `user`; profil güncellemesi rol alanını kabul etmez; admin yalnızca SQL ile |
+| İzolasyon | Tüm sorgular `user_id = ?` ile; başka kullanıcının kaydı 404 (varlık bilgisi sızdırılmaz) |
+| Hız sınırı | Kayıt 5/saat, giriş 30/10 dk, kurtarma 10/saat (IP özeti); AI: kullanıcı başına aynı anda 1 istek |
+| Bot koruması | Turnstile secret tanımlıysa kayıt ve kurtarmada sunucuda zorunlu |
+| AI girdisi | Kullanıcı metni system prompt'a hiç girmez; ayrı "untrusted DATA" JSON bloğunda iletilir; system prompt uydurma özellik/indirim/sağlık iddiasını yasaklar |
+| AI çıktısı | JSON şema doğrulaması + uzunluk kırpma; hatalı çıktı arayüze gönderilmez, hak iade edilir |
+| Dosya yükleme | Tarayıcıda tür/boyut kontrolü ve 512 px JPEG'e dönüştürme; sunucuda gerçek PNG/JPEG başlığı, ≤1 MB ve ≤512 px doğrulanır; SVG vb. reddedilir |
+| Maliyet | Kullanıcı ve global günlük bütçe atomik olarak ayrılır; Workers Free planında otomatik ücretlendirme yok |
+| Açık yönlendirme | `/login?next=` yalnızca `/app/...` yollarını kabul eder |
+
+## Sonraki aşamalar için planlanan
+
+- Yönetici paneli ve yönetici işlemlerinin `audit_logs` kaydı (tablo ve temel olaylar hazır).
+- Görsel içerik denetimi.
