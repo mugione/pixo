@@ -20,7 +20,7 @@
 npx wrangler d1 create pixo-db
 ```
 
-Çıktıdaki `database_id` değerini `wrangler.jsonc` içindeki `d1_databases[0].database_id` alanına yazın (bu değer gizli değildir, commit edilebilir). Ardından:
+(Yapıldı: `pixo-db`, `--location=eeur`, id `43f495e9-bb46-457d-9f45-633cba0c1211`.) Yeni kurulumda `--location=eeur` kullanın ve çıktıdaki `database_id` değerini `wrangler.jsonc` içindeki `d1_databases[0].database_id` alanına yazın (bu değer gizli değildir, commit edilebilir). Ardından:
 
 ```bash
 npm run db:migrate:remote
@@ -52,7 +52,7 @@ openssl rand -hex 32 | npx wrangler secret put IP_HASH_SALT
 `wrangler.jsonc` içinde:
 
 ```jsonc
-"vars": { "APP_ENV": "production", "SITE_URL": "https://pixo.tr", "TURNSTILE_SITE_KEY": "<site key>" },
+"vars": { "APP_ENV": "production", "SITE_URL": "https://pixo.tr", "TURNSTILE_SITE_KEY": "<site key>" },  // yerel değerler .dev.vars'tan gelir
 "routes": [
   { "pattern": "pixo.tr", "custom_domain": true },
   { "pattern": "www.pixo.tr", "custom_domain": true }

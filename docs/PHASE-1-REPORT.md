@@ -41,6 +41,18 @@ Bu ortamda çalıştırılan komutlar ve sonuçları:
 - **Canlı Cloudflare dağıtımı yapılmadı** (hesabınızda değişiklik onayınız olmadan yapılmaz).
 - Lighthouse / Core Web Vitals ölçümü yapılmadı; dağıtım sonrası PageSpeed Insights ile ölçülmeli. Mevcut boyutlar: JS 113 KB gzip, CSS 8 KB gzip, fontlar yalnızca gereken alt kümeler.
 
+## Canlı dağıtım durumu (10 Ekim 2026)
+
+| Kaynak | Durum |
+|---|---|
+| Worker `pixo` | Yayında: `https://pixo.murat-gulsen.workers.dev` |
+| D1 `pixo-db` (EEUR, `43f495e9-…`) | Oluşturuldu, `0001_contact_messages` uygulandı |
+| Secret `IP_HASH_SALT` | Ayarlandı (rastgele 32 bayt) |
+| Turnstile | **Yok** — `TURNSTILE_SITE_KEY` boş; iletişim formu "kullanılamıyor" gösterir (test anahtarları canlıda bilerek kullanılmadı) |
+| `pixo.tr` alan adı | **Bağlanmadı** — mevcut Pages projesiyle çakışma riski; onay bekliyor |
+
+Diğer Worker'lar (`bt-drive-upload`, `gmail-mailer`) değiştirilmedi.
+
 ## Bilinen eksikler ve bilinçli kararlar
 
 1. **"Ücretsiz Başla" / "Giriş Yap"** henüz çalışan bir kayıt formuna gitmiyor; `/signup` sayfası hesapların Phase 2'de açılacağını açıkça söylüyor ve demo/iletişime yönlendiriyor (sahte form yok). Sayfa `noindex`.
