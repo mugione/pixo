@@ -35,8 +35,8 @@ Tarih: 10 Ekim 2026 · Canlı: `https://pixo.murat-gulsen.workers.dev` (Worker `
 ## Doğrulanamayanlar — açıkça
 
 1. **Gerçek Workers AI çağrısı bu ortamdan test edilemedi.** Sandbox'ın proxy'si `*.workers.dev` adresini engelliyor ve verilen API token'ının Workers AI izni yok. Model yanıt biçimi (GLM-4.7-flash `response` / `choices`, FLUX.2 `image` base64 / akış) savunmacı şekilde ele alınıyor ve testlerde her biçim deneniyor; ama **ilk canlı istek sizin denemenizle doğrulanacak**. Başarısız olursa kullanıcının hakkı iade edilir ve neden `generations.error_code` alanına yazılır (bkz. `docs/OPERATIONS.md` → İzleme).
-2. **Turnstile canlıda kapalı** (anahtar yok). Kayıt yalnızca IP başına hız sınırı ve global AI bütçesiyle korunuyor. Gerçek kullanıcı davet etmeden önce Turnstile anahtarlarını ekleyin.
-3. **`pixo.tr` bağlı değil.** Passkey'ler alan adına bağlıdır: `workers.dev` üzerinde oluşturulan hesaplar `pixo.tr`'de **çalışmaz**. Gerçek kullanıcıları `pixo.tr` bağlandıktan sonra kaydedin.
+2. **Turnstile canlıda açık** (site key `wrangler.jsonc`'ta, secret `wrangler secret` ile). Widget'ın hostname listesinin `pixo.tr` ve `pixo.murat-gulsen.workers.dev`'i içerdiği bu ortamdan doğrulanamadı.
+3. **`pixo.tr` Worker Custom Domain olarak bağlandı.** Passkey'ler alan adına bağlıdır: `workers.dev` üzerinde oluşturulan passkey'ler `pixo.tr`'de çalışmaz (kurtarma kodları her iki adreste çalışır). Kullanıcılar `pixo.tr` üzerinden kayıt olmalı.
 4. Neuron değerleri tahmindir; ilk hafta Cloudflare panelindeki gerçek kullanıma göre ayarlanmalı.
 5. Yerel `workerd` bu sandbox'ta dış ağa çıkamadığı için Turnstile sunucu doğrulaması yerelde uçtan uca çalıştırılamadı (birim testleriyle kapsanıyor).
 
